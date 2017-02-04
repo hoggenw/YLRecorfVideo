@@ -12,6 +12,18 @@ open class YLProgressView: UIView {
 
     
     var shapeLayer :CAShapeLayer!
+    //进度条计时器时间间隔
+    var incInterval: TimeInterval = 0.05
+    //总的时间
+    var totalTimerInterval: TimeInterval?
+    //总时间标准
+    var totalTime: TimeInterval?
+    
+    var showProgress: CGFloat?
+    //进度开始标刻
+    var startProgress: CGFloat?
+    var timeLeftLabel = UILabel()
+    
     public var progressTimer: Timer?
     
     deinit {
@@ -25,20 +37,70 @@ open class YLProgressView: UIView {
         super.init(frame: frame)
         self.shapeLayer = CAShapeLayer(layer: self.layer)
         shapeLayer.borderWidth = 1
-        shapeLayer.lineWidth = 2
+        shapeLayer.lineWidth = 4
+        shapeLayer.fillColor = UIColor.clear.cgColor
+        timeLeftLabel.frame = CGRect(x: 0, y: shapeLayer.lineWidth, width: frame.width, height: frame.height - shapeLayer.lineWidth)
+        timeLeftLabel.textAlignment = .center
+        timeLeftLabel.textColor = UIColor.white
+        timeLeftLabel.adjustsFontSizeToFitWidth = true
+        tintColorDidChange()
         self.layer.addSublayer(self.shapeLayer)
+        self.addSubview(timeLeftLabel)
     }
     
     required public init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
+    //MARK: - Color
+    override open func tintColorDidChange() {
+        if (self.superclass?.instancesRespond(to: #selector(tintColorDidChange)))! {
+            super.tintColorDidChange()
+        }
+        
+        shapeLayer.strokeColor = UIColor.green.cgColor
+        shapeLayer.borderColor = UIColor.green.cgColor
+    }
     
-    open func startProgress(progress: CGFloat) {
+    ///
+    ///
+    /// - Parameter progress: 输入进度条开始比例，不大于1
+    open func startProgress(progress: CGFloat ,totalTimer: TimeInterval) {
+        showProgress = progress
+        startProgress = progress
+        totalTimerInterval = totalTimer
+        totalTime = totalTimer
+        timeLeftLabel.text = String(format: "%.0lf″00", totalTimer)
+        progressTimer = Timer(timeInterval: incInterval, target: self, selector: #selector(timerProgress), userInfo: nil, repeats:true)
+        RunLoop.current.add(progressTimer!, forMode: RunLoopMode.defaultRunLoopMode)
+        
+        
+    }
+    
+    func timerProgress() {
+
+        totalTimerInterval = totalTimerInterval! - incInterval
+        showProgress = showProgress! - startProgress! * CGFloat(incInterval / totalTime!)
+        let second =  Int(totalTimerInterval! * 100 / 100)
+        let microsecond = Int(totalTimerInterval! * 100) % 100
+        timeLeftLabel.text = String(format: "%d″%2d", second,microsecond)
+        update(progress: showProgress!)
+        if totalTimerInterval! < 0 {
+            if progressTimer != nil {
+                progressTimer?.invalidate()
+                progressTimer = nil
+                print("over")
+                timeLeftLabel.removeFromSuperview()
+            }
+        }
         
     }
     
     open func stopProgress() {
-        
+        if progressTimer != nil {
+            progressTimer?.invalidate()
+            progressTimer = nil
+            print("over")
+        }
     }
     override open func layoutSubviews() {
         super.layoutSubviews()
@@ -51,8 +113,8 @@ open class YLProgressView: UIView {
         CATransaction.begin()
         //显式事务默认开启动画效果,kCFBooleanTrue关闭
         CATransaction.setValue(kCFBooleanTrue, forKey: kCATransactionDisableActions)
-        shapeLayer.strokeEnd = progress
-        shapeLayer.strokeStart = 1 - progress
+        shapeLayer.strokeEnd = 1 - (1 - progress)/2
+        shapeLayer.strokeStart = 1 - shapeLayer.strokeEnd
         CATransaction.commit()
         
     }

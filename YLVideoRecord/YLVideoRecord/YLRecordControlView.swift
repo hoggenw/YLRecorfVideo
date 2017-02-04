@@ -10,66 +10,24 @@ import UIKit
 
 open class YLRecordControlView: UIView {
     open var progressView: YLProgressView!
-    open var progressViewHeight: CGFloat! {
-     
-        didSet {
-            if progressView != nil {
-                progressView.frame = CGRect(x: 0, y: 0, width: frame.size.width, height: progressViewHeight)
-            }
-        }
-    }
-    open var borderWidth: CGFloat! {
-        didSet {
-            progressView.shapeLayer.borderWidth = borderWidth
-        }
-    }
-    open var lineWidth: CGFloat! {
-        didSet {
-            progressView.shapeLayer.lineWidth = lineWidth
-        }
-    }
-    var progress: CGFloat! {
-        didSet {
-            set(progress: progress)
-        }
-    }
 
-    
-    fileprivate var countTimer:Timer!
-    fileprivate let progressViewAnimationKey: String = "YLprogressViewAnimationKey"
     
     override init(frame: CGRect) {
         super.init(frame: frame)
         initialUI()
-        initialDataSource()
-        
+
     }
     required public init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
     
     func initialUI() {
-        progressViewHeight = 2
-        progressView = YLProgressView(frame: CGRect(x: 0, y: 0, width: frame.size.width, height: 2))
-        borderWidth = 1
-        lineWidth = 2
-        progress = 1.0
+        let progressView = YLProgressView(frame: CGRect(x: 0, y: 100, width: frame.size.width, height: 20))
+        self.addSubview(progressView)
+        progressView.startProgress(progress: 1, totalTimer: 10)
         
     }
-    
-    func initialDataSource() {
-        
-        
-    }
-    //MARK: - Progress Control
-    func set(progress: CGFloat, animated: Bool) {
-        progressView.update(progress: self.progress)
-    }
-    
-    func set(progress: CGFloat) {
-        set(progress: progress, animated: false)
-    }
-    
+
 
     
 

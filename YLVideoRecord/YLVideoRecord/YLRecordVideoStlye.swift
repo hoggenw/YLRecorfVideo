@@ -14,6 +14,9 @@ public enum AVCameraStatues {
     case failed
 }
 
+protocol YLRecordVideoControlDelegate {
+    
+}
 
 class YLRecordVideoStlye: NSObject {
 
