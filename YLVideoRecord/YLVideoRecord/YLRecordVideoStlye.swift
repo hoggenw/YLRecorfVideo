@@ -14,7 +14,7 @@ public enum AVCameraStatues {
     case failed
 }
 
-protocol YLRecordVideoControlDelegate {
+public protocol YLRecordVideoControlDelegate {
     
 }
 
