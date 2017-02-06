@@ -89,7 +89,7 @@ open class YLProgressView: UIView {
                 progressTimer?.invalidate()
                 progressTimer = nil
                 print("over")
-                timeLeftLabel.removeFromSuperview()
+                timeLeftLabel.text = ""
             }
         }
         
@@ -100,6 +100,8 @@ open class YLProgressView: UIView {
             progressTimer?.invalidate()
             progressTimer = nil
             print("over")
+            timeLeftLabel.text = ""
+            update(progress: 0)
         }
     }
     override open func layoutSubviews() {
@@ -128,8 +130,8 @@ open class YLProgressView: UIView {
         
         path.lineWidth     = borderWidth
         path.lineJoinStyle = .round //终点处理
-        path.move(to: CGPoint(x: 0, y: 0))
-        path.addLine(to: CGPoint(x: width, y: 0))
+        path.move(to: CGPoint(x: 0, y: -2))
+        path.addLine(to: CGPoint(x: width, y: -2))
         return path;
     }
 

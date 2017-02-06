@@ -23,6 +23,8 @@ class ViewController: UIViewController {
     }
     
     func initUI() {
+        let recordView =  YLRecordControlView(frame: CGRect(x: 0, y: self.view.bounds.size.height - 100, width: self.view.bounds.size.width, height: 100))
+        self.view.addSubview(recordView)
         
     }
 
