@@ -13,7 +13,12 @@ class ViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         self.view.backgroundColor = UIColor.gray
-        initUI()
+        let button = UIButton()
+        button.frame = CGRect(x: 170, y: 200, width: 60, height: 50)
+        button.setTitle("录制", for: .normal)
+        button.titleLabel?.textColor = UIColor.white
+        self.view.addSubview(button)
+        button.addTarget(self, action: #selector(turnToRecordController), for: .touchUpInside)
         // Do any additional setup after loading the view, typically from a nib.
     }
 
@@ -22,10 +27,8 @@ class ViewController: UIViewController {
         // Dispose of any resources that can be recreated.
     }
     
-    func initUI() {
-        let recordView =  YLRecordControlView(frame: CGRect(x: 0, y: self.view.bounds.size.height - 100, width: self.view.bounds.size.width, height: 100))
-        self.view.addSubview(recordView)
-        
+    func turnToRecordController() {
+        self.navigationController?.pushViewController(YLRecordVideoViewController(), animated: true)
     }
 
 

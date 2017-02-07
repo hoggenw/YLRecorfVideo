@@ -11,7 +11,8 @@ import UIKit
 open class YLRecordControlView: UIView {
 
 
-    
+    //最大允许的录制时间（秒）
+    open var totalSeconds: Float64?
     /// 录制的控制代理
     open var delegate: YLRecordVideoControlDelegate?
     
@@ -62,7 +63,10 @@ open class YLRecordControlView: UIView {
     }
     
     func recordButtonAction(sender:UIButton) {
-        progressView.startProgress(progress: 1, totalTimer: 10)
+        if let totalTime = totalSeconds {
+            progressView.startProgress(progress: 1, totalTimer: Double(totalTime))
+        }
+        
 
         
     }

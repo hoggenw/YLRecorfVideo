@@ -17,7 +17,7 @@ public enum AVCameraStatues {
 public protocol YLRecordVideoControlDelegate {
     
 }
+let ScreenWidth = UIScreen.main.bounds.width
+let ScreenHeight = UIScreen.main.bounds.height
 
-class YLRecordVideoStlye: NSObject {
 
-}
