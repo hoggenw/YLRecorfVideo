@@ -12,7 +12,6 @@
 		11D021B71E44543200288117 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 11D021B51E44543200288117 /* Main.storyboard */; };
 		11D021B91E44543200288117 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 11D021B81E44543200288117 /* Assets.xcassets */; };
 		11D021BC1E44543200288117 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 11D021BA1E44543200288117 /* LaunchScreen.storyboard */; };
-		11D021C41E4458BD00288117 /* YLRecordVideoSetting.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11D021C31E4458BD00288117 /* YLRecordVideoSetting.swift */; };
 		11D021C61E445BBB00288117 /* YLRecordVideoStlye.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11D021C51E445BBB00288117 /* YLRecordVideoStlye.swift */; };
 		11D021C81E445CD100288117 /* YLRecordVideoViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11D021C71E445CD100288117 /* YLRecordVideoViewController.swift */; };
 		11D021CA1E445EB600288117 /* YLRecordVideoManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11D021C91E445EB600288117 /* YLRecordVideoManager.swift */; };
@@ -28,7 +27,6 @@
 		11D021B81E44543200288117 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		11D021BB1E44543200288117 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		11D021BD1E44543200288117 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		11D021C31E4458BD00288117 /* YLRecordVideoSetting.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = YLRecordVideoSetting.swift; sourceTree = "<group>"; };
 		11D021C51E445BBB00288117 /* YLRecordVideoStlye.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = YLRecordVideoStlye.swift; sourceTree = "<group>"; };
 		11D021C71E445CD100288117 /* YLRecordVideoViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = YLRecordVideoViewController.swift; sourceTree = "<group>"; };
 		11D021C91E445EB600288117 /* YLRecordVideoManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = YLRecordVideoManager.swift; sourceTree = "<group>"; };
@@ -72,7 +70,6 @@
 				11D021B81E44543200288117 /* Assets.xcassets */,
 				11D021BA1E44543200288117 /* LaunchScreen.storyboard */,
 				11D021BD1E44543200288117 /* Info.plist */,
-				11D021C31E4458BD00288117 /* YLRecordVideoSetting.swift */,
 				11D021C51E445BBB00288117 /* YLRecordVideoStlye.swift */,
 				11D021C71E445CD100288117 /* YLRecordVideoViewController.swift */,
 				11D021C91E445EB600288117 /* YLRecordVideoManager.swift */,
@@ -158,7 +155,6 @@
 				11D021CC1E446CFB00288117 /* YLProgressView.swift in Sources */,
 				11D021B41E44543200288117 /* ViewController.swift in Sources */,
 				11D021CA1E445EB600288117 /* YLRecordVideoManager.swift in Sources */,
-				11D021C41E4458BD00288117 /* YLRecordVideoSetting.swift in Sources */,
 				11D021CE1E45628600288117 /* YLRecordControlView.swift in Sources */,
 				11D021C81E445CD100288117 /* YLRecordVideoViewController.swift in Sources */,
 				11D021B21E44543200288117 /* AppDelegate.swift in Sources */,

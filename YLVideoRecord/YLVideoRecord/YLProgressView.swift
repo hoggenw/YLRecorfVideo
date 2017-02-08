@@ -90,6 +90,7 @@ open class YLProgressView: UIView {
                 progressTimer = nil
                 print("over")
                 timeLeftLabel.text = ""
+                postNotification()
             }
         }
         
@@ -119,6 +120,9 @@ open class YLProgressView: UIView {
         shapeLayer.strokeStart = 1 - shapeLayer.strokeEnd
         CATransaction.commit()
         
+    }
+    func postNotification() {
+        NotificationCenter.default.post(name: NSNotification.Name(rawValue: "YLProgressTimeOver"), object: nil)
     }
     
     func shapeLayerPath() -> UIBezierPath {

@@ -16,13 +16,40 @@ open class YLRecordVideoViewController: UIViewController {
     let ScreenWidth = UIScreen.main.bounds.width
     let ScreenHeight = UIScreen.main.bounds.height
     
+    public var videoQuality: YLVideoQuality = .normalQuality {
+        didSet {
+            switch videoQuality {
+            case .normalQuality:
+                sessionPreset = AVCaptureSessionPreset640x480
+                videoWidthKey = (480)
+                videoHightKey = (640)
+                
+            case .lowQuality:
+                sessionPreset = AVCaptureSessionPreset352x288
+                videoWidthKey = (288)
+                videoHightKey = (352)
+                
+            case .highQuality:
+                sessionPreset = AVCaptureSessionPreset1280x720
+                videoWidthKey = (720)
+                videoHightKey = (1280)
+            }
+        }
+    }
+    //设置图像源尺寸
+    public var sessionPreset: String?
+    
+    //宽高
+    var videoWidthKey: NSNumber = (480)
+    var videoHightKey: NSNumber = (640)
+    
     //最大允许的录制时间（秒）
     var totalSeconds: Float64 = 10.00
     
     //每秒帧数
     var framesPerSecond: Int32 = 30
-    //设置图像源尺寸
-    var sessionPreset: String = AVCaptureSessionPreset640x480
+
+    
     //输出文件格式
     var videoType: String = AVFileTypeMPEG4
     //
@@ -47,6 +74,13 @@ open class YLRecordVideoViewController: UIViewController {
     weak var videoLayer: AVCaptureVideoPreviewLayer!
     weak var playerLayer:AVPlayerLayer!
 
+    override init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: Bundle?) {
+       super.init(nibName: nibNameOrNil, bundle: nibBundleOrNil)
+    }
+    
+    required public init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
     //MARK: - Life Cycle
     override open func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
@@ -61,6 +95,7 @@ open class YLRecordVideoViewController: UIViewController {
     override open func viewDidLoad() {
         super.viewDidLoad()
         self.view.backgroundColor = UIColor.gray
+        
         initUI()
         setupCaptureSession()
         setupAssetWriter()
@@ -75,8 +110,9 @@ open class YLRecordVideoViewController: UIViewController {
         view.layer.addSublayer(videoLayer)
         
         playerLayer = AVPlayerLayer()
-        playerLayer.frame = CGRect(x: 0, y: 100, width: ScreenWidth, height: ScreenHeight - 200)
+        playerLayer.frame = CGRect(x: 0, y: 0, width: ScreenWidth, height: ScreenHeight - 100)
         playerLayer.isHidden = true
+        playerLayer.backgroundColor = UIColor.clear.cgColor
         playerLayer.videoGravity = AVLayerVideoGravityResizeAspectFill
         //NotificationCenter.default.addObserver(self, selector: #selector(videoPlayDidEnd), name: NSNotification.Name.AVPlayerItemDidPlayToEndTime, object: nil)
         
@@ -89,6 +125,7 @@ open class YLRecordVideoViewController: UIViewController {
         view.addSubview(previewButton)
         
         let recordView =  YLRecordControlView(frame: CGRect(x: 0, y: self.view.bounds.size.height - 100, width: self.view.bounds.size.width, height: 100))
+        recordView.delegate = self
         recordView.totalSeconds = totalSeconds
         self.view.addSubview(recordView)
         
@@ -147,11 +184,11 @@ open class YLRecordVideoViewController: UIViewController {
                 //AVVideoAverageBitRateKey视频尺寸*比率
                 //AVVideoMaxKeyFrameIntervalKey关键帧最大间隔，1为每个都是关键帧，数值越大压缩率越高
                 let videoCompressionProperties : [String: Any] = [AVVideoAverageBitRateKey: (1000 * 1024),
-                                                                  AVVideoProfileLevelKey: AVVideoProfileLevelH264Main31,
+                                                                  AVVideoProfileLevelKey: AVVideoProfileLevelH264Main30,
                                                                   AVVideoMaxKeyFrameIntervalKey:(40)]
                 let videoSettings: [String: Any] = [AVVideoCodecKey : AVVideoCodecH264,
-                                                    AVVideoWidthKey:(480),
-                                                    AVVideoHeightKey:(640),
+                                                    AVVideoWidthKey:self!.videoWidthKey,
+                                                    AVVideoHeightKey:self!.videoHightKey,
                                                     AVVideoCompressionPropertiesKey:videoCompressionProperties]
                 let videoWriterInput = AVAssetWriterInput(mediaType: AVMediaTypeVideo, outputSettings: videoSettings)
                 if assetWriter.canAdd(videoWriterInput) {
@@ -199,6 +236,7 @@ open class YLRecordVideoViewController: UIViewController {
     //MARK: 停止录像
     func stopRecord() {
         fileOutput.stopRecording()
+        print("停止录像")
     }
     
     //MARK: 删除上一个录制视频
@@ -206,8 +244,9 @@ open class YLRecordVideoViewController: UIViewController {
         if FileManager.default.fileExists(atPath: path) {
             do {
                 try FileManager.default.removeItem(at: URL(fileURLWithPath: path))
+                print("删除已存在视频")
             } catch _ {
-                
+                print("删除已存在视频失败")
             }
              print("delete video file: \(path)")
         }
@@ -224,11 +263,13 @@ open class YLRecordVideoViewController: UIViewController {
         playerLayer.isHidden = true
         previewButton.isHidden = true
         deleteFile(path: customVideoPath)
+        print("重新录制")
         startRecord()
     }
     
     //MARK: 预览视频
     func previewCaptureVideo() {
+        print("预览录制")
         previewButton.isHidden = true
         let videoFileURL = URL(fileURLWithPath: customVideoPath)
         let playItem = AVPlayerItem(url: videoFileURL)
@@ -318,6 +359,63 @@ open class YLRecordVideoViewController: UIViewController {
         // Dispose of any resources that can be recreated.
     }
     
+    //计算文件大小
+    func calculationFileSize(path: String) {
+        var videoSize: Float = 0
+        let fileManager = FileManager.default
+        if fileManager.fileExists(atPath: customVideoPath) {
+            do {
+                let attr:[FileAttributeKey : Any] = try fileManager.attributesOfItem(atPath: customVideoPath)
+                videoSize = Float(attr[FileAttributeKey.size] as! Int64)
+                var videoSizeString = ""
+                //print("原始大小\(videoSize)")
+                if videoSize < 1024 {
+                    videoSizeString = String(format: "%.1fB", videoSize)
+                }else if videoSize > 1024 && videoSize < 1024*1024 {
+                    videoSizeString = String(format: "%.1fKB", videoSize/1024)
+                }else if videoSize > 1024*1024 && videoSize < 1024*1024*1024 {
+                    videoSizeString = String(format: "%.1fMB", videoSize/(1024*1024))
+                }
+                print("大小：\(videoSizeString)")
+            } catch  {
+                print("错误")
+            }
+            
+        }
+    }
+    
+    //视频压缩(无效)
+    func reduceVideo() -> String{
+        let saveUrl = URL(fileURLWithPath: customVideoPath)
+        
+        // 通过文件的 url 获取到这个文件的资源
+        let avAsset: AVURLAsset = AVURLAsset.init(url: saveUrl)
+        let compatiblePresets = AVAssetExportSession.exportPresets(compatibleWith: avAsset)
+        //压缩视频
+        if compatiblePresets.contains(AVAssetExportPresetLowQuality) { // 导出属性是否包含低分辨率
+            // 通过资源（AVURLAsset）来定义 AVAssetExportSession，得到资源属性来重新打包资源 （AVURLAsset, 将某一些属性重新定义
+            let exportSession: AVAssetExportSession = AVAssetExportSession(asset: avAsset, presetName: AVAssetExportPresetLowQuality)!
+            // 设置导出文件的存放路径
+            let formatter = DateFormatter()
+            formatter.dateFormat = "yyyy-MM-dd-HH:mm:ss"
+            let date = Date()
+
+            let outPutPath = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true)[0].appending(String(format: "/output-%@.mp4", formatter.string(from: date)))
+
+            exportSession.outputURL = URL(fileURLWithPath: outPutPath)
+            
+            exportSession.shouldOptimizeForNetworkUse = true
+            exportSession.outputFileType = AVFileTypeMPEG4
+            exportSession.exportAsynchronously(completionHandler: {
+                if exportSession.status == AVAssetExportSessionStatus.completed {
+                    self.calculationFileSize(path: outPutPath)
+                }
+            })
+        }
+        
+        return " "
+    }
+    
 
 
 }
@@ -334,6 +432,35 @@ extension YLRecordVideoViewController:AVCaptureFileOutputRecordingDelegate {
 }
 
 
+//MARK: 控制代理
+extension YLRecordVideoViewController: YLRecordVideoControlDelegate {
+    
+    public func startRecordDelegate() {
+        startRecord()
+    }
+    public func restartRecordDelegate() {
+        restartRecord()
+    }
+    
+    public func cancelRecordDelegate() {
+        cancelViewControler()
+        stopRecord()
+        deleteFile(path: customVideoPath)
+        playerLayer.player?.pause()
+    }
+    
+    public func stopRecordDelegate() {
+        
+        stopRecord()
+    }
+    
+    public func choiceVideoDelegate() {
+        calculationFileSize(path: customVideoPath)
+        playerLayer.player?.pause()
+        print("选择视频\(customVideoPath)")
+    }
+    
+}
 
 
 

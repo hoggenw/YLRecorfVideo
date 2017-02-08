@@ -21,6 +21,13 @@ open class YLRecordControlView: UIView {
     fileprivate var cancalButton = UIButton()
     //持有进度条
     open var progressView: YLProgressView!
+    open var ifRestart = false
+    open var stopButtonStatus = true
+    
+    deinit {
+        NotificationCenter().removeObserver(self)
+        print("controllerView deinit")
+    }
     ///
     ///
     /// - Parameter frame: 控制视图的size建议最少大于100
@@ -37,7 +44,7 @@ open class YLRecordControlView: UIView {
     func initialUI() {
         progressView = YLProgressView(frame: CGRect(x: 0, y: 0, width: frame.size.width, height: 20))
         self.addSubview(progressView)
-        
+        NotificationCenter.default.addObserver(self, selector: #selector(timeOver), name: NSNotification.Name(rawValue: "YLProgressTimeOver"), object: nil)
         recordButton.frame = CGRect(x: frame.width/2 - 30, y: 20 + (frame.height - 20)/2 - 35, width: 60, height: 60)
         recordButton.layer.cornerRadius = 30
         recordButton.setTitle("开始", for: .normal)
@@ -51,6 +58,7 @@ open class YLRecordControlView: UIView {
         self.addSubview(stopOrChioceButton)
         stopOrChioceButton.setTitleColor(UIColor.white, for: .normal)
         stopOrChioceButton.setTitle("停止", for: .normal)
+        stopOrChioceButton.setTitle("选择", for: .selected)
         stopOrChioceButton.addTarget(self, action: #selector(stopOrChioceButtonAction(sender:)), for: .touchUpInside)
         
         cancalButton.frame = CGRect(x: 10, y: 20 + (frame.height - 20)/2 - 25, width: 50, height: 40)
@@ -66,18 +74,53 @@ open class YLRecordControlView: UIView {
         if let totalTime = totalSeconds {
             progressView.startProgress(progress: 1, totalTimer: Double(totalTime))
         }
-        
 
+        sender.isSelected = !sender.isSelected
+        if sender.isSelected {
+            sender.backgroundColor = UIColor.gray
+            sender.isUserInteractionEnabled = false
+            stopOrChioceButton.isSelected = false
+        }
+        if let _ = delegate {
+            if !ifRestart {
+                delegate?.startRecordDelegate()
+            }else{
+                delegate?.restartRecordDelegate()
+            }
+            
+        }
+        ifRestart = true
         
     }
     
     func stopOrChioceButtonAction(sender:UIButton) {
         progressView.stopProgress()
         
+        recordButton.isUserInteractionEnabled = true
+        recordButton.isSelected = false
+        recordButton.backgroundColor = UIColor.orange
+        recordButton.setTitle("重拍", for: .normal)
+        if let _ = delegate {
+            if !sender.isSelected {
+                 delegate?.stopRecordDelegate()
+            }else {
+                delegate?.choiceVideoDelegate()
+            }
+           
+        }
+        sender.isSelected = !sender.isSelected
+        
     }
     
     func cancalButtonAction(sender: UIButton) {
-        
+        progressView.stopProgress()
+        if let _ = delegate {
+            delegate?.cancelRecordDelegate()
+        }
+    }
+    
+    func timeOver() {
+        stopOrChioceButtonAction(sender: stopOrChioceButton)
     }
 
 

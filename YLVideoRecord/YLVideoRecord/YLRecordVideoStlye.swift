@@ -13,9 +13,18 @@ public enum AVCameraStatues {
     case unAuthorized
     case failed
 }
+public enum YLVideoQuality {
+    case normalQuality
+    case lowQuality
+    case highQuality
+}
 
 public protocol YLRecordVideoControlDelegate {
-    
+    func startRecordDelegate()
+    func restartRecordDelegate()
+    func cancelRecordDelegate()
+    func stopRecordDelegate()
+    func choiceVideoDelegate()
 }
 
 

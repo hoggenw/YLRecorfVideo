@@ -28,7 +28,9 @@ class ViewController: UIViewController {
     }
     
     func turnToRecordController() {
-        self.navigationController?.pushViewController(YLRecordVideoViewController(), animated: true)
+        let contro = YLRecordVideoViewController()
+         contro.videoQuality = .normalQuality
+        self.navigationController?.pushViewController(contro, animated: true)
     }
 
 
