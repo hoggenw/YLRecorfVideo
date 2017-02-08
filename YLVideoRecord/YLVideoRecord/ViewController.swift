@@ -28,11 +28,21 @@ class ViewController: UIViewController {
     }
     
     func turnToRecordController() {
-        let contro = YLRecordVideoViewController()
-         contro.videoQuality = .normalQuality
-        self.navigationController?.pushViewController(contro, animated: true)
+        let manager = YLRecordVideoManager.shareManager()
+        manager.delegate = self
+        manager.videoQuality = .normalQuality
+        manager.recordTotalTime = 10
+        manager.showRecordView(viewController: self)
+//        let contro = YLRecordVideoViewController()
+//         contro.videoQuality = .normalQuality
+//        self.navigationController?.pushViewController(contro, animated: true)
     }
 
 
 }
 
+extension ViewController: YLRecordVideoChoiceDelegate {
+    func choiceVideoWith(path: String) {
+        print("选择视频路径为：\(path)")
+    }
+}

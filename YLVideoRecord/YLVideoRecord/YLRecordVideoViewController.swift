@@ -16,7 +16,7 @@ open class YLRecordVideoViewController: UIViewController {
     let ScreenWidth = UIScreen.main.bounds.width
     let ScreenHeight = UIScreen.main.bounds.height
     
-    public var videoQuality: YLVideoQuality = .normalQuality {
+    open var videoQuality: YLVideoQuality = .normalQuality {
         didSet {
             switch videoQuality {
             case .normalQuality:
@@ -37,7 +37,9 @@ open class YLRecordVideoViewController: UIViewController {
         }
     }
     //设置图像源尺寸
-    public var sessionPreset: String?
+    var sessionPreset: String?
+    
+    open var delegate: YLRecordVideoChoiceDelegate?
     
     //宽高
     var videoWidthKey: NSNumber = (480)
@@ -239,18 +241,7 @@ open class YLRecordVideoViewController: UIViewController {
         print("停止录像")
     }
     
-    //MARK: 删除上一个录制视频
-    func deleteFile(path: String)  {
-        if FileManager.default.fileExists(atPath: path) {
-            do {
-                try FileManager.default.removeItem(at: URL(fileURLWithPath: path))
-                print("删除已存在视频")
-            } catch _ {
-                print("删除已存在视频失败")
-            }
-             print("delete video file: \(path)")
-        }
-    }
+
     
     //MARK: 选择视频
     func chooseVideo() {
@@ -262,7 +253,7 @@ open class YLRecordVideoViewController: UIViewController {
         videoLayer.isHidden = false
         playerLayer.isHidden = true
         previewButton.isHidden = true
-        deleteFile(path: customVideoPath)
+        YLRecordVideoManager.deleteFile(path: customVideoPath)
         print("重新录制")
         startRecord()
     }
@@ -445,7 +436,7 @@ extension YLRecordVideoViewController: YLRecordVideoControlDelegate {
     public func cancelRecordDelegate() {
         cancelViewControler()
         stopRecord()
-        deleteFile(path: customVideoPath)
+        YLRecordVideoManager.deleteFile(path: customVideoPath)
         playerLayer.player?.pause()
     }
     
@@ -457,7 +448,10 @@ extension YLRecordVideoViewController: YLRecordVideoControlDelegate {
     public func choiceVideoDelegate() {
         calculationFileSize(path: customVideoPath)
         playerLayer.player?.pause()
-        print("选择视频\(customVideoPath)")
+        if delegate != nil {
+            delegate?.choiceVideoWith(path: customVideoPath)
+        }
+        cancelViewControler()
     }
     
 }
